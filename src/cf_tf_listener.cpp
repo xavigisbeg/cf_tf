@@ -13,7 +13,7 @@
 #include <visualization_msgs/MarkerArray.h>
 
 //void Callback(const cob_object_detection_msgs::Detection::Detection_::_pose_type msg) //You cannot subscribe just to the pose, you subscribe to the whole message. Therefore, the types must match
-void Callback(const cob_object_detection_msgs::DetectionArray msg)                      //and this is the winner
+void Callback(const cob_object_detection_msgs::DetectionArray &msg)                      //const because we are just reading it, & to pass by reference
 {
     //int nvmark=0;                                 //Visible markers
     //ROS_INFO_STREAM("I heard " << msg); //"<<
@@ -23,7 +23,15 @@ void Callback(const cob_object_detection_msgs::DetectionArray msg)              
     if (msg.detections.empty() != true){
         for (int i=0; i <= msg.detections.size()-1; i++){  //msg.detections.size()
             try{
-                ROS_INFO_STREAM("Message 1: " << msg.detections[i]);
+                //ROS_INFO_STREAM("Message 1: " << msg.detections[i]);                  //Displays the whole detection information
+                switch (msg.detections[i].id){              //We do this so that we know that we can address the pose to the right marker. Will be replaced
+                    case 0: {ROS_INFO("CF 0:"); break;};
+                    case 1: {ROS_INFO("CF 1:"); break;};
+                    case 2: {ROS_INFO("CF 2:"); break;};
+                    case 3: {ROS_INFO("CF 3:"); break;};
+                }
+
+                ROS_INFO_STREAM(msg.detections[i].pose.pose);
             }
             catch(...){
                 //ROS_INFO("Failed to send Marker [%s]", i); //sprintf(buffer, i)
