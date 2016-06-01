@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 
+#include <stdio.h>
 #include <tf/transform_listener.h>
 #include "std_msgs/String.h"
 //#include <cob_object_detection_msg/Detection.msg>
@@ -11,18 +12,41 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
-/**
- * This tutorial demonstrates simple receipt of messages over the ROS system.
- */
-/*void Callback(const std_msgs::String::ConstPtr& msg)
+//void Callback(const cob_object_detection_msgs::Detection::Detection_::_pose_type msg) //You cannot subscribe just to the pose, you subscribe to the whole message. Therefore, the types must match
+void Callback(const cob_object_detection_msgs::DetectionArray msg)                      //and this is the winner
 {
-  ROS_INFO("I heard: [%s]", msg->data.c_str());
-}*/
-//void Callback(const geometry_msgs::PoseStamped msg)
-void Callback(const cob_object_detection_msgs::DetectionArray msg)
-{
-  //ROS_INFO("I heard: [%s]", msg.pose.orientation.x pose->data.c_str());
-  ROS_INFO_STREAM("I heard " << msg); //"<<
+    //int nvmark=0;                                 //Visible markers
+    //ROS_INFO_STREAM("I heard " << msg); //"<<
+    //ROS_INFO_STREAM("Message 1: " << msg.detections[0].label);
+    //if (msg.detections.empty() != true) ROS_INFO_STREAM(msg.detections.size());
+    //char buffer [50];
+    if (msg.detections.empty() != true){
+        for (int i=0; i <= msg.detections.size()-1; i++){  //msg.detections.size()
+            try{
+                ROS_INFO_STREAM("Message 1: " << msg.detections[i]);
+            }
+            catch(...){
+                //ROS_INFO("Failed to send Marker [%s]", i); //sprintf(buffer, i)
+            }
+        }
+    }
+    //else  ROS_INFO("No Marker");
+
+    /* ****  **** */
+
+    /* **** Function to chop the Detection Array into several Detection, so that they can be treated and sent separately**** */
+
+    /* **** Function to chop the Detection into the different datatypes and publish it **** */
+    /*for (int i=1; i<=nvmark+1; i++)           //For all visible markers:
+    {
+        try{
+            ROS_INFO("Marker [s%]", i);     //We could chop this marker
+            //Here we should chop the data that interests us, taking just the geometry_msgs::PoseStamped and send it to the
+        }
+        catch(){
+            ROS_INFO("Failed to send Marker [s%]", i);
+        }
+    }*/
 }
 
 int main(int argc, char **argv)
@@ -61,11 +85,9 @@ int main(int argc, char **argv)
    * is the number of messages that will be buffered up before beginning to throw
    * away the oldest ones.
    */
-  //ros::Subscriber sub = n.subscribe("fiducial_detection_array", 1000); //, chatterCallback);
-  //std::string s;
-  //ros::Subscriber sub = nh.subscribe("listener",s,1,const geometry_msgs::PoseStamped,this ,1000);//, CallBack);
+
   ros::Subscriber sub = nh.subscribe("/fiducials/fiducial_detection_array",1,Callback); //Basic subscriber. Just has the topic it is subscribed to, the callback function and how many messages it caches
-    //void Callback (const geometry_msgs::Twist)
+
   /**
    * ros::spin() will enter a loop, pumping callbacks.  With this version, all
    * callbacks will be called from within this thread (the main one).  ros::spin()
