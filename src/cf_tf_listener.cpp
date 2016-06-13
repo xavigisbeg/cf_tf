@@ -20,8 +20,8 @@
 bool flag_world = false;
 geometry_msgs::Pose::_position_type wrldp;
 geometry_msgs::Pose::_orientation_type wrldo;
-geometry_msgs::Pose::_position_type goalp;
-geometry_msgs::Pose::_orientation_type goalo;
+//geometry_msgs::Pose::_position_type goalp;
+//geometry_msgs::Pose::_orientation_type goalo;
 
 char getch();
 void Callback(const cob_object_detection_msgs::DetectionArray &msg);        //Do we want reference or not? CppStyleGuide says no
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     wrldo.x = 0.0;
     wrldo.y = 0.0;
     wrldo.z = 0.0;
-    wrldo.w = 1;
+    wrldo.w = 1.0;
 
     while(nh.ok())
     {
@@ -128,7 +128,7 @@ void Callback(const cob_object_detection_msgs::DetectionArray &msg)
                     tf::Transform transformcf;
                     transformcf.setOrigin(tf::Vector3(CFposep.x, CFposep.y, CFposep.z));
                     transformcf.setRotation(tf::Quaternion(CFposeo.x, CFposeo.y, CFposeo.z, CFposeo.w));
-                    brcf.sendTransform(tf::StampedTransform(transformcf, ros::Time::now(), "world" , "CF1"));  //+ sprintf(i))
+                    brcf.sendTransform(tf::StampedTransform(transformcf, ros::Time::now(), "camera1" , "CF1"));  //+ sprintf(i))
                 }
                 catch(...)
                 {
@@ -155,7 +155,7 @@ void broadcastWorld()
     transformw.setRotation(tf::Quaternion(wrldo.x, wrldo.y, wrldo.z, wrldo.w));
     brw.sendTransform(tf::StampedTransform(transformw.inverse(), ros::Time::now(), "world" , "camera1"));
 
-    goalp.x = wrldp.x;
+    /*goalp.x = wrldp.x;
     goalp.y = wrldp.y;
     goalp.z = wrldp.z + 1.0;
     goalo.x = wrldo.x;
@@ -167,7 +167,7 @@ void broadcastWorld()
     tf::Transform transformgoal;
     transformgoal.setOrigin(tf::Vector3(goalp.x, goalp.y, goalp.z));
     transformgoal.setRotation(tf::Quaternion(goalo.x, goalo.y, goalo.z, goalo.w));
-    brgoal.sendTransform(tf::StampedTransform(transformgoal, ros::Time::now(), "world" , "goal"));  //+ sprintf(i))
+    brgoal.sendTransform(tf::StampedTransform(transformgoal, ros::Time::now(), "world" , "goal"));  //+ sprintf(i)) */
 }
 
 
