@@ -33,10 +33,10 @@
 		</node>
 	</group>
     <!-- Configuration of the marker -->
-  <arg name="yaml_file" default="fiducials_0_136.yaml" />
+  <arg name="yaml_file" default="fiducials_0.yaml" />
   <!-- send parameters to parameter server -->
-  <rosparam command="load" ns="fiducials" file="$(find cf_tf)/data/basic/$(arg yaml_file)"/>
-  <param name="fiducials/model_directory" value="$(find cf_tf)/data/basic/"/>
+  <rosparam command="load" ns="fiducials" file="$(find cf_tf)/data/$(arg yaml_file)"/>
+  <param name="fiducials/model_directory" value="$(find cf_tf)/data/"/>
 
   <!-- start left camera -->
   <node pkg="cob_fiducials" ns="fiducials" type="fiducials" name="fiducials" output="screen">
