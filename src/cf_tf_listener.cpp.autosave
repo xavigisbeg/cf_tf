@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     wrldo.x = 0.0;
     wrldo.y = 0.0;
     wrldo.z = 0.0;
-    wrldo.w = 1;
+    wrldo.w = 1.0;
 
     while(nh.ok())
     {

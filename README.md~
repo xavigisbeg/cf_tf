@@ -25,14 +25,6 @@ The minimum devices needed to use the cf_tf package are:
 
 The software is tested with Crazyflie 2.0 and Crazyradio PA. Other models may run but are not supported in this moment.
 
-## Usage
-
-_Work in progress..._
-
-## Parameters
-
-_Work in progress..._
-
 ## Extra installation info to ROS newcomers
 
 After downloading or cloning the mentioned packages, probably the user's system does not have all the packages or libraries that all the packages need. This will result in failures when doing "catkin_make" or "catkin build". 
