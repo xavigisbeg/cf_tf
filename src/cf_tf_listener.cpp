@@ -17,20 +17,99 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
+namespace cf_tf
+{
+  void broadcastWorld(geometry_msgs::Pose::_position_type wrldp, geometry_msgs::Pose::_orientation_type wrldo)
+  {
+      tf::Transform transfworld;
+      tf::TransformBroadcaster brworld;
+      tf::Transform::setOrigin(tf::Vector3(wrldp.x, wrldp.y, wrldp.z));
+      tf::Transform::setRotation(tf::Quaternion(wrldo.x, wrldo.y, wrldo.z, wrldo.w));
+      brworld.sendTransform(transfworld.inverse(), ros::Time::now(), "world" , "camera1");
+  }
+
+}
+
 // Cob_fiducials namespace should be added
 bool flag_world = false;
-geometry_msgs::Pose::_position_type wrldp;
-geometry_msgs::Pose::_orientation_type wrldo;
+//geometry_msgs::Pose::_position_type wrldp;
+//geometry_msgs::Pose::_orientation_type wrldo;
 
-char getch();
-void Callback(const cob_object_detection_msgs::DetectionArray &msg);        //Do we want reference or not? CppStyleGuide says no
-void broadcastWorld();
+//geometry_msgs::Pose::_position_type worldpos;
+//geometry_msgs::Pose::_orientation_type worldori;
+
+//char getch();
+//void Callback(const cob_object_detection_msgs::DetectionArray &msg);        //Do we want reference or not? CppStyleGuide says no
+
+using cf_tf;
+
+void listenerCallback(const cob_object_detection_msgs::DetectionArray msg15);
 
 int main(int argc, char **argv)
 {
+  ros::init(argc, argv, "listener");
+  ros::NodeHandle nh;
+
+  ros::Subscriber sub = nh.subscribe("/fiducials/fiducial_detection_array", 10, listenerCallback);
+
+  puts("Default world set, press key to set world where the marker is detected");
+
+  while(nh.ok())
+  {
+    ros::spinOnce();
+    broadcastWorld();
+  }
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*int main(int argc, char **argv)
+{
     ros::init(argc, argv, "listener");
     ros::NodeHandle nh;
-    ros::Subscriber sub = nh.subscribe("/fiducials/fiducial_detection_array",10,Callback);     // Basic subscriber. Just has the topic it is subscribed to, the callback function and how many messages it caches
+    ros::Subscriber sub = nh.subscribe("/fiducials/fiducial_detection_array",10,Callback);   // Basic subscriber. Just has the topic it is subscribed to, the callback function and how many messages it caches
     puts("Press any key to set /world");
 
     wrldp.x = 0.0;
@@ -68,7 +147,7 @@ void Callback(const cob_object_detection_msgs::DetectionArray &msg)
 
             flag_world = true;                                                              // Will not enter this condition again
             puts("/world set");
-            ROS_INFO_STREAM(wrldp.x << " " << wrldo.x);
+            ROS_INFO_STREAM(wrldp << " " << wrldo);
 
             // Overwrite the global array world with the detected marker's pose
             wrldp.x = msg.detections[0].pose.pose.position.x;
@@ -102,7 +181,7 @@ void Callback(const cob_object_detection_msgs::DetectionArray &msg)
                         case 3: {ROS_INFO("CF 3:"); break;};
                     default:{ROS_INFO("ID Fail"); break;};                                  // If an error occurs and the detections[i] is accessed erronially
                     }
-                    /*CFposep.x = msg.detections[i].pose.pose.position.x;
+                    CFposep.x = msg.detections[i].pose.pose.position.x;
                     CFposep.y = msg.detections[i].pose.pose.position.y;
                     CFposep.z = msg.detections[i].pose.pose.position.z;
                     CFposeo.x = msg.detections[i].pose.pose.orientation.x;
@@ -118,7 +197,7 @@ void Callback(const cob_object_detection_msgs::DetectionArray &msg)
                     tf::Transform transformcf;
                     transformcf.setOrigin(tf::Vector3(CFposep.x, CFposep.y, CFposep.z));
                     transformcf.setRotation(tf::Quaternion(CFposeo.x, CFposeo.y, CFposeo.z, CFposeo.w));
-                    brcf.sendTransform(tf::StampedTransform(transformcf, ros::Time::now(), "camera1" , "CF1"));  //+ sprintf(i))*/
+                    brcf.sendTransform(tf::StampedTransform(transformcf, ros::Time::now(), "camera1" , "CF1"));  //+ sprintf(i))
                 }
                 catch(...)
                 {
@@ -146,7 +225,7 @@ void broadcastWorld()
         transformw.setOrigin(tf::Vector3(wrldp.x, wrldp.y, wrldp.z));
         transformw.setRotation(tf::Quaternion(wrldo.x, wrldo.y, wrldo.z, wrldo.w));
         brw.sendTransform(tf::StampedTransform(transformw.inverse(), ros::Time::now(), "world" , "camera1"));
-        ROS_INFO_STREAM(wrldp << wrldo);
+        //ROS_INFO_STREAM(wrldp << wrldo);
         //ROS_INFO("World broadcasted");
     }
     catch(...)
@@ -160,7 +239,7 @@ void broadcastWorld()
 
 /*transformw.setOrigin(tf::Vector3(wrld.detections[0].pose.pose.position.x, wrld.detections[0].pose.pose.position.y, wrld.detections[0].pose.pose.position.z));
 transformw.setRotation(tf::Quaternion(wrld.detections[0].pose.pose.orientation.x, wrld.detections[0].pose.pose.orientation.y, wrld.detections[0].pose.pose.orientation.z, wrld.detections[0].pose.pose.orientation.w));
-brw.sendTransform(tf::StampedTransform(transformw, ros::Time::now(), "world" , "cam0"));*/
+brw.sendTransform(tf::StampedTransform(transformw, ros::Time::now(), "world" , "cam0"));
 
 
   // Reads key input in terminal
