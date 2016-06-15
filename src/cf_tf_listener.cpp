@@ -20,8 +20,6 @@
 bool flag_world = false;
 geometry_msgs::Pose::_position_type wrldp;
 geometry_msgs::Pose::_orientation_type wrldo;
-//geometry_msgs::Pose::_position_type goalp;
-//geometry_msgs::Pose::_orientation_type goalo;
 
 char getch();
 void Callback(const cob_object_detection_msgs::DetectionArray &msg);        //Do we want reference or not? CppStyleGuide says no
@@ -34,8 +32,6 @@ int main(int argc, char **argv)
     ros::Subscriber sub = nh.subscribe("/fiducials/fiducial_detection_array",10,Callback);     // Basic subscriber. Just has the topic it is subscribed to, the callback function and how many messages it caches
     puts("Press any key to set /world");
 
-
-
     wrldp.x = 0.0;
     wrldp.y = 0.0;
     wrldp.z = 3.0;
@@ -47,16 +43,7 @@ int main(int argc, char **argv)
     while(nh.ok())
     {
         ros::spinOnce();
-        try
-        {
-            broadcastWorld();
-            ROS_INFO("World broadcasted");
-            ROS_INFO_STREAM(wrldp.x << " " << wrldo.x);
-        }
-        catch(...)
-        {
-            ROS_INFO("Failed listening cam to marker or broadcasting world");
-        }
+        broadcastWorld();
     }
 
     return 0;
@@ -80,6 +67,7 @@ void Callback(const cob_object_detection_msgs::DetectionArray &msg)
 
             flag_world = true;                                                              // Will not enter this condition again
             puts("/world set");
+            ROS_INFO_STREAM(wrldp.x << " " << wrldo.x);
 
             // Overwrite the global array world with the detected marker's pose
             wrldp.x = msg.detections[0].pose.pose.position.x;
@@ -105,14 +93,15 @@ void Callback(const cob_object_detection_msgs::DetectionArray &msg)
                 try
                 {
                     int j = msg.detections[i].id;
-                    switch (j){                                          // We do this so that we know that we can address the pose to the right marker. Will be replaced by the radio choice
+                    switch (j)
+                    {                                          // We do this so that we know that we can address the pose to the right marker. Will be replaced by the radio choice
                         case 0: {ROS_INFO("CF 0:"); break;};     //ROS_INFO("CF 0:")
                         case 1: {ROS_INFO("CF 1:"); break;};
                         case 2: {ROS_INFO("CF 2:"); break;};
                         case 3: {ROS_INFO("CF 3:"); break;};
                     default:{ROS_INFO("ID Fail"); break;};                                  // If an error occurs and the detections[i] is accessed erronially
                     }
-                    CFposep.x = msg.detections[i].pose.pose.position.x;
+                    /*CFposep.x = msg.detections[i].pose.pose.position.x;
                     CFposep.y = msg.detections[i].pose.pose.position.y;
                     CFposep.z = msg.detections[i].pose.pose.position.z;
                     CFposeo.x = msg.detections[i].pose.pose.orientation.x;
@@ -120,7 +109,7 @@ void Callback(const cob_object_detection_msgs::DetectionArray &msg)
                     CFposeo.z = msg.detections[i].pose.pose.orientation.z;
                     CFposeo.w = msg.detections[i].pose.pose.orientation.w;
 
-                    //ROS_INFO_STREAM(msg.detections[i].pose.pose);
+                    ROS_INFO_STREAM(msg.detections[i].pose.pose);
 
                     // We try to post the detected crazyflie's frame
 
@@ -128,7 +117,7 @@ void Callback(const cob_object_detection_msgs::DetectionArray &msg)
                     tf::Transform transformcf;
                     transformcf.setOrigin(tf::Vector3(CFposep.x, CFposep.y, CFposep.z));
                     transformcf.setRotation(tf::Quaternion(CFposeo.x, CFposeo.y, CFposeo.z, CFposeo.w));
-                    brcf.sendTransform(tf::StampedTransform(transformcf, ros::Time::now(), "camera1" , "CF1"));  //+ sprintf(i))
+                    brcf.sendTransform(tf::StampedTransform(transformcf, ros::Time::now(), "camera1" , "CF1"));  //+ sprintf(i))*/
                 }
                 catch(...)
                 {
@@ -143,31 +132,26 @@ void Callback(const cob_object_detection_msgs::DetectionArray &msg)
 void broadcastWorld()
 {
     //std::isnan();     //Check if the values to pass the transform are valid
-    tf::TransformBroadcaster brw;
-    tf::Transform transformw;
-    tf::TransformListener listenw;
-    ros::Time now = ros::Time::now();
+    try
+    {
+        tf::TransformBroadcaster brw;
+        tf::Transform transformw;
+        //tf::TransformListener listenw;
+        //ros::Time now = ros::Time::now();
 
-    // Broadcast the world frame at any moment
+        // Broadcast the world frame at any moment
 
-    //listenw.waitForTransform("marker", "camera1", now, ros::Duration(10.0));
-    transformw.setOrigin(tf::Vector3(wrldp.x, wrldp.y, wrldp.z));
-    transformw.setRotation(tf::Quaternion(wrldo.x, wrldo.y, wrldo.z, wrldo.w));
-    brw.sendTransform(tf::StampedTransform(transformw.inverse(), ros::Time::now(), "world" , "camera1"));
-
-    /*goalp.x = wrldp.x;
-    goalp.y = wrldp.y;
-    goalp.z = wrldp.z + 1.0;
-    goalo.x = wrldo.x;
-    goalo.y = wrldo.y;
-    goalo.z = wrldo.z;
-    goalo.w = wrldo.w;
-
-    tf::TransformBroadcaster brgoal;
-    tf::Transform transformgoal;
-    transformgoal.setOrigin(tf::Vector3(goalp.x, goalp.y, goalp.z));
-    transformgoal.setRotation(tf::Quaternion(goalo.x, goalo.y, goalo.z, goalo.w));
-    brgoal.sendTransform(tf::StampedTransform(transformgoal, ros::Time::now(), "world" , "goal"));  //+ sprintf(i)) */
+        //listenw.waitForTransform("marker", "camera1", now, ros::Duration(10.0));
+        transformw.setOrigin(tf::Vector3(wrldp.x, wrldp.y, wrldp.z));
+        transformw.setRotation(tf::Quaternion(wrldo.x, wrldo.y, wrldo.z, wrldo.w));
+        brw.sendTransform(tf::StampedTransform(transformw.inverse(), ros::Time::now(), "world" , "camera1"));
+        ROS_INFO_STREAM(wrldp << wrldo);
+        //ROS_INFO("World broadcasted");
+    }
+    catch(...)
+    {
+        ROS_INFO("Failed to broadcast world");
+    }
 }
 
 
@@ -216,3 +200,24 @@ tf::Transform transformcf[msg.detections.size()];
 transformcf[i].setOrigin(tf::Vector3(CFposep[i].x, CFposep[i].y, CFposep[i].z));
 transformcf[i].setRotation(tf::Quaternion(CFposeo[i].x, CFposeo[i].y, CFposeo[i].z, CFposeo[i].w));
 brcf.sendTransform(tf::StampedTransform(transformcf[i], ros::Time::now(), "world" , "CF1"));  //+ sprintf(i))*/
+
+// goal transform, wrong because it is a topic with PoseStamped /goal
+
+//geometry_msgs::Pose::_position_type goalp;
+//geometry_msgs::Pose::_orientation_type goalo;
+
+/*goalp.x = wrldp.x;
+goalp.y = wrldp.y;
+goalp.z = wrldp.z + 1.0;
+goalo.x = wrldo.x;
+goalo.y = wrldo.y;
+goalo.z = wrldo.z;
+goalo.w = wrldo.w;
+
+tf::TransformBroadcaster brgoal;
+tf::Transform transformgoal;
+transformgoal.setOrigin(tf::Vector3(goalp.x, goalp.y, goalp.z));
+transformgoal.setRotation(tf::Quaternion(goalo.x, goalo.y, goalo.z, goalo.w));
+brgoal.sendTransform(tf::StampedTransform(transformgoal, ros::Time::now(), "world" , "goal"));  //+ sprintf(i)) */
+
+//Publish this: rostopic pub /goal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "world"}, pose: {position: {x: 0.0, y: 0.0, z: 2.0}, orientation: {w: 1.0}}}'
