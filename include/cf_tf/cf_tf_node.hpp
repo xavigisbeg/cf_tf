@@ -1,7 +1,7 @@
 //  THIS IS RESTRUCTURE  //
 
-#ifndef CONTROLNODE_HPP
-#define CONTROLNODE_HPP
+#ifndef CF_TF_HPP
+#define CF_TF_HPP
 
 
 #include <std_msgs/Float64.h>
@@ -20,10 +20,10 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
-class ControlNode
+class Cf_Tf
 {
 public:
-  ControlNode();
+  Cf_Tf();
   ros::NodeHandle nh;
 
   // FLAGS
@@ -31,7 +31,7 @@ public:
 
   // FUNCTIONS
     //Subscribers and Publishers
-  void listenerCallback(cob_object_detection_msgs::DetectionArray &msg);
+  void listenerCallback(const cob_object_detection_msgs::DetectionArray &msg);
 
     // Broadcasters
   void broadcastWorld();
@@ -45,8 +45,9 @@ public:
   geometry_msgs::PoseStamped::_pose_type getCfPose(int cf_id) const;
 
     // Set private variables
-  void setWorldPose(cob_object_detection_msgs::DetectionArray &wdp);
-  void setCfPose(cob_object_detection_msgs::DetectionArray &cfp, int jj, int ii);  // We will pass the cf ID [jj = j] to store and the messaga detection ID [ii = i]
+  void setWorldPose(const cob_object_detection_msgs::DetectionArray &wdp);
+  void setCfPose(const cob_object_detection_msgs::DetectionArray &cfp, int jj, int ii);  // We will pass the cf ID [jj = j] to store and the messaga detection ID [ii = i]
+  void initializeWorldPose();
 
     // StampedPose of world and CF
 
@@ -68,4 +69,4 @@ private:
   geometry_msgs::PoseStamped::_pose_type cf_pose[4];
 };
 
-#endif  // CONTROLNODE_HPP
+#endif  // Cf_Tf_HPP
