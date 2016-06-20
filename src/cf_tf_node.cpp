@@ -1,4 +1,7 @@
 //  THIS IS RESTRUCTURE  //
+
+#define glue(a,b) a ## b
+
 #include <ros/ros.h>
 
 #include "cf_tf/cf_tf_node.hpp"
@@ -71,12 +74,9 @@ void Cf_Tf::broadcastWorld()   // Does not work properly
   {
     tf::TransformBroadcaster brw;
     tf::Transform transformw;
-    //tf::TransformListener listenw;
-    //ros::Time now = ros::Time::now();
 
     // Broadcast the world frame at any moment
 
-    //listenw.waitForTransform("marker", "camera1", now, ros::Duration(10.0));
     transformw.setOrigin(tf::Vector3(world_pose.position.x, world_pose.position.y, world_pose.position.z));
     transformw.setRotation(tf::Quaternion(world_pose.orientation.x, world_pose.orientation.y, world_pose.orientation.z, world_pose.orientation.w));
     brw.sendTransform(tf::StampedTransform(transformw.inverse(), ros::Time::now(), "world" , "camera1"));
@@ -96,15 +96,12 @@ void Cf_Tf::broadcastCF(int cf_id)
   {
     tf::TransformBroadcaster brcf[4];
     tf::Transform transformcf[4];
-    //tf::TransformListener listenw;
-    //ros::Time now = ros::Time::now();
 
-    // Broadcast the world frame at any moment
+    // Broadcast the crazyflies' frames at any moment
 
-    //listenw.waitForTransform("marker", "camera1", now, ros::Duration(10.0));
     transformcf[cf_id].setOrigin(tf::Vector3(cf_pose[cf_id].position.x, cf_pose[cf_id].position.y, cf_pose[cf_id].position.z));
     transformcf[cf_id].setRotation(tf::Quaternion(cf_pose[cf_id].orientation.x, cf_pose[cf_id].orientation.y, cf_pose[cf_id].orientation.z, cf_pose[cf_id].orientation.w));
-    brcf[cf_id].sendTransform(tf::StampedTransform(transformcf[cf_id], ros::Time::now(), "camera1" , "CF1"));  //+ sprintf(i))
+    brcf[cf_id].sendTransform(tf::StampedTransform(transformcf[cf_id], ros::Time::now(), "camera1" , glue("CF","cf_id")));  //+ sprintf(i))
     //ROS_INFO_STREAM(cf_pose);
     //ROS_INFO("CF broadcasted");
   }

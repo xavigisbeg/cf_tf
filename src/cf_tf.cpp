@@ -8,14 +8,10 @@ int main(int argc, char* argv[])
   Cf_Tf Node;
   Node.initializeWorldPose();
 
-  //tf::TransformListener listenmarker;
-  //ros::Time now = ros::Time::now();
+  //ros::Duration(2).sleep();
 
-  // Broadcast the world frame at any moment
-  ros::Duration(2).sleep();
   while(Node.nh.ok())
   {
-    //listenmarker.waitForTransform("camera1", "marker", now, ros::Duration(10.0));
     ros::spinOnce();
     Node.broadcastWorld();
     //Node.broadcastCF();
