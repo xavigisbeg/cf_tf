@@ -1,5 +1,7 @@
-//#ifndef LISTENERNODE_HPP
-#define LISTENERNODE_HPP
+//  THIS IS RESTRUCTURE  //
+
+#ifndef CONTROLNODE_HPP
+#define CONTROLNODE_HPP
 
 
 #include <std_msgs/Float64.h>
@@ -18,67 +20,52 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
-/*class cf_tf
+class ControlNode
 {
 public:
-  cf_tf();
-
-
-
+  ControlNode();
   ros::NodeHandle nh;
 
+  // FLAGS
+
+
+  // FUNCTIONS
+    //Subscribers and Publishers
+  void listenerCallback(cob_object_detection_msgs::DetectionArray &msg);
+
     // Broadcasters
-  void broadcastworld();
-  void broadcastCF();
+  void broadcastWorld();
+  void broadcastCF(int cf_id);
 
     // Special (maybe to erase) functions
   char getch();
 
-  // Flags
-  bool flag_world = false;
-
-  // FUNCTIONS
-
     // Access private variables
-  geometry_msgs::Pose getWorldPose() const
-  {
-    return world_pose;
-  }
-
-  geometry_msgs::Pose getCfPose() const
-  {
-    return cf_pose;
-  }
+  geometry_msgs::PoseStamped::_pose_type getWorldPose() const;
+  geometry_msgs::PoseStamped::_pose_type getCfPose(int cf_id) const;
 
     // Set private variables
-   void setWorldPose(geometry_msgs::Pose wdp)
-  {
-    world_pose = wdp;
-  }
-
-  void getCfPose(geometry_msgs::Pose cfp)
-  {
-    cf_pose = cfp;
-  }
+  void setWorldPose(cob_object_detection_msgs::DetectionArray &wdp);
+  void setCfPose(cob_object_detection_msgs::DetectionArray &cfp, int jj, int ii);  // We will pass the cf ID [jj = j] to store and the messaga detection ID [ii = i]
 
     // StampedPose of world and CF
 
 
-    // ROS message callbacks
-  void listenerCallback(const cob_object_detection_msgs::DetectionArray &msg);
 
 private:
   ros::Subscriber m_marker_pose_sub;
-  ros::Publisher m_world_pose_pub;
-  ros::Publisher m_cf_pose_pub;
+  //ros::Publisher m_world_pose_pub;
+  //ros::Publisher m_cf_pose_pub;
   //ros::Publisher m_debug_pub; //! For debugging variables in rqt_plot
   //dynamic reconfigure server
-  dynamic_reconfigure::Server<ardrone_velocity::dynamic_param_configConfig> m_server;
-  nav_msgs::Odometry m_odo_msg;
-  ros::Time t;
-  ros::Time old_t;
+  //dynamic_reconfigure::Server<ardrone_velocity::dynamic_param_configConfig> m_server;
+  //ros::Time t;
+  //ros::Time old_t;
+
+  bool flag_world;// = false;  //To become a private parameter
 
   geometry_msgs::PoseStamped::_pose_type world_pose;
-  geometry_msgs::PoseStamped::_pose_type cf_pose;
-};*/
+  geometry_msgs::PoseStamped::_pose_type cf_pose[4];
+};
 
+#endif  // CONTROLNODE_HPP
