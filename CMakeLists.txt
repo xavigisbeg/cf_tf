@@ -81,7 +81,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## To declare and build dynamic reconfigure parameters within this
 ## package, follow these steps:
 ## * In the file package.xml:
-##   * add a build_depend and a run_depend tag for "dynamic_reconfigure"
+##   * add a build_depeind and a run_depend tag for "dynamic_reconfigure"
 ## * In this file (CMakeLists.txt):
 ##   * add "dynamic_reconfigure" to
 ##     find_package(catkin REQUIRED COMPONENTS ...)
@@ -106,7 +106,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES cf_tf
-  CATKIN_DEPENDS roscpp sensor_msgs std_srvs tf
+  CATKIN_DEPENDS roscpp sensor_msgs std_srvs tf cob_object_detection_msgs #cob_object_perception cob_perception_common crazyflie_ros
 #  DEPENDS system_lib
 )
 
@@ -116,7 +116,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# include_directories(include)
+include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
@@ -126,12 +126,23 @@ include_directories(
 #   src/${PROJECT_NAME}/cf_tf.cpp
 # )
 
+set(CF_TF_LISTENER_SOURCE_FILES
+    src/cf_tf_node.cpp
+    src/cf_tf.cpp
+)
+
+set(CF_TF_LISTENER_HEADER_FILES
+    include/cf_tf/cf_tf_node.hpp
+)
+
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 # add_dependencies(cf_tf ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
+add_executable(cf_tf ${CF_TF_LISTENER_SOURCE_FILES} ${CF_TF_LISTENER_HEADER_FILES})
 # add_executable(cf_tf_node src/cf_tf_node.cpp)
 
 ## Add cmake target dependencies of the executable
@@ -139,18 +150,13 @@ include_directories(
 # add_dependencies(cf_tf_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
+target_link_libraries(cf_tf ${catkin_LIBRARIES})
 # target_link_libraries(cf_tf_node
 #   ${catkin_LIBRARIES}
 # )
 ## Add the modified fiducials cpp
 #add_executable(fiducials_cf src/fiducials_cf.cpp)
 #target_link_libraries(fiducials_cf ${catkin_LIBRARIES})
-
-##Add the listener
-
-#target_link_libraries(cf_tf_listener ${catkin_LIBRARIES})
-add_executable(cf_tf_listener src/cf_tf_listener.cpp)
-target_link_libraries(cf_tf_listener ${catkin_LIBRARIES})
 
 #############
 ## Install ##
@@ -196,6 +202,13 @@ target_link_libraries(cf_tf_listener ${catkin_LIBRARIES})
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
+
+##################
+# FOR QT CREATOR
+##################
+file(GLOB_RECURSE QT_MOC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/cf_tf/*.hpp)
+FILE(GLOB_RECURSE INC_ALL "include/cf_tf/*.hpp")
+FILE(GLOB_RECURSE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS src/*.cpp)
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
