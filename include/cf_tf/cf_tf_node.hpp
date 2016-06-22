@@ -48,6 +48,7 @@ public:
   void setWorldPose(const cob_object_detection_msgs::DetectionArray &wdp);
   void setCfPose(const cob_object_detection_msgs::DetectionArray &cfp, int jj, int ii);  // We will pass the cf ID [jj = j] to store and the messaga detection ID [ii = i]
   void initializeWorldPose();
+  void initializeCfPose();
 
     // StampedPose of world and CF
 
@@ -55,6 +56,12 @@ public:
 
 private:
   ros::Subscriber m_marker_pose_sub;
+
+  tf::TransformBroadcaster brcf[4];
+  tf::Transform transformcf[4];
+  tf::TransformBroadcaster brw;
+  tf::Transform transformw;
+
   //ros::Publisher m_world_pose_pub;
   //ros::Publisher m_cf_pose_pub;
   //ros::Publisher m_debug_pub; //! For debugging variables in rqt_plot

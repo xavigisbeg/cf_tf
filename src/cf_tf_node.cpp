@@ -45,16 +45,17 @@ void Cf_Tf::listenerCallback(const cob_object_detection_msgs::DetectionArray &ms
         try
         {
           int j = msg.detections[i].id; //msg.header.frame_id   msg.detections[i].id
-          switch (j)
+          /*switch (j)
                         {                                          // We do this so that we know that we can address the pose to the right marker. Will be replaced by the radio choice
                           case 0: {ROS_INFO("CF 0:"); break;};     //ROS_INFO("CF 0:")
                           case 1: {ROS_INFO("CF 1:"); break;};
                           case 2: {ROS_INFO("CF 2:"); break;};
                           case 3: {ROS_INFO("CF 3:"); break;};
                           default:{ROS_INFO("ID Fail"); break;};                                  // If an error occurs and the detections[i] is accessed erronially
-                        }
+                        }*/
           setCfPose(msg, j, i);
-          ROS_INFO_STREAM(msg.detections[i].id << msg.detections[i].pose.pose << j << cf_pose[j]);   //We want to check that the variable has been correctly written
+          //ROS_INFO_STREAM(msg.detections[i].id << msg.detections[i].pose.pose << j << cf_pose[j]);   //We want to check that the variable has been correctly written
+          ROS_INFO_STREAM(msg.detections.size());
         }
         catch(...)
         {
@@ -72,15 +73,12 @@ void Cf_Tf::broadcastWorld()   // Does not work properly
   //std::isnan();     //Check if the values to pass the transform are valid
   try
   {
-    tf::TransformBroadcaster brw;
-    tf::Transform transformw;
-
     // Broadcast the world frame at any moment
 
-    transformw.setOrigin(tf::Vector3(world_pose.position.x, world_pose.position.y, world_pose.position.z));
-    transformw.setRotation(tf::Quaternion(world_pose.orientation.x, world_pose.orientation.y, world_pose.orientation.z, world_pose.orientation.w));
-    brw.sendTransform(tf::StampedTransform(transformw.inverse(), ros::Time::now(), "world" , "camera1"));
-    ROS_INFO_STREAM(world_pose);
+    Cf_Tf::transformw.setOrigin(tf::Vector3(world_pose.position.x, world_pose.position.y, world_pose.position.z));
+    Cf_Tf::transformw.setRotation(tf::Quaternion(world_pose.orientation.x, world_pose.orientation.y, world_pose.orientation.z, world_pose.orientation.w));
+    Cf_Tf::brw.sendTransform(tf::StampedTransform(transformw.inverse(), ros::Time::now(), "world" , "cam0"));
+    //ROS_INFO_STREAM(world_pose);
     //ROS_INFO("World broadcasted");
   }
   catch(...)
@@ -93,21 +91,19 @@ void Cf_Tf::broadcastCF(int cf_id)
 {
   //std::isnan();     //Check if the values to pass the transform are valid
   try
-  {
-    tf::TransformBroadcaster brcf[4];
-    tf::Transform transformcf[4];
-
+  {   
     // Broadcast the crazyflies' frames at any moment
 
-    transformcf[cf_id].setOrigin(tf::Vector3(cf_pose[cf_id].position.x, cf_pose[cf_id].position.y, cf_pose[cf_id].position.z));
-    transformcf[cf_id].setRotation(tf::Quaternion(cf_pose[cf_id].orientation.x, cf_pose[cf_id].orientation.y, cf_pose[cf_id].orientation.z, cf_pose[cf_id].orientation.w));
-    brcf[cf_id].sendTransform(tf::StampedTransform(transformcf[cf_id], ros::Time::now(), "camera1" , glue("CF","cf_id")));  //+ sprintf(i))
+    Cf_Tf::transformcf[cf_id].setOrigin(tf::Vector3(cf_pose[cf_id].position.x, cf_pose[cf_id].position.y, cf_pose[cf_id].position.z));
+    Cf_Tf::transformcf[cf_id].setRotation(tf::Quaternion(cf_pose[cf_id].orientation.x, cf_pose[cf_id].orientation.y, cf_pose[cf_id].orientation.z, cf_pose[cf_id].orientation.w));
+    std::string str_ch_fr = "cf" + boost::lexical_cast<std::string>(cf_id);
+    Cf_Tf::brcf[cf_id].sendTransform(tf::StampedTransform(transformcf[cf_id], ros::Time::now(), "cam0" , str_ch_fr));  //+ sprintf(i))
     //ROS_INFO_STREAM(cf_pose);
     //ROS_INFO("CF broadcasted");
   }
   catch(...)
   {
-    ROS_INFO("Failed to broadcast world");
+    ROS_INFO("Failed to broadcast a Crazyflie");
   }
 }
 
@@ -174,11 +170,25 @@ void Cf_Tf::initializeWorldPose()
   flag_world = false;
 }
 
-/*switch (j)
-              {                                          // We do this so that we know that we can address the pose to the right marker. Will be replaced by the radio choice
-                case 0: {ROS_INFO("CF 0:"); break;};     //ROS_INFO("CF 0:")
-                case 1: {ROS_INFO("CF 1:"); break;};
-                case 2: {ROS_INFO("CF 2:"); break;};
-                case 3: {ROS_INFO("CF 3:"); break;};
-                default:{ROS_INFO("ID Fail"); break;};                                  // If an error occurs and the detections[i] is accessed erronially
-              }*/
+void Cf_Tf::initializeCfPose()
+{
+  try
+  {
+    for (int cf_id=0; cf_id<=3; cf_id++)
+    {
+      cf_pose[cf_id].position.x = 0;
+      cf_pose[cf_id].position.y = 0;
+      cf_pose[cf_id].position.z = 3;
+      cf_pose[cf_id].orientation.x = 0;
+      cf_pose[cf_id].orientation.y = 0;
+      cf_pose[cf_id].orientation.z = 0;
+      cf_pose[cf_id].orientation.w = 1;
+    }
+  }
+  catch(...)
+  {
+    ROS_INFO("Failed to initialize the crazyflies' poses");
+  }
+}
+
+//Publish this: rostopic pub /goal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "world"}, pose: {position: {x: 0.0, y: 0.0, z: 2.0}, orientation: {w: 1.0}}}'
