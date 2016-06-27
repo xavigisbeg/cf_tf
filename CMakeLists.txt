@@ -206,8 +206,11 @@ target_link_libraries(cf_tf ${catkin_LIBRARIES})
 ##################
 # FOR QT CREATOR
 ##################
-file(GLOB_RECURSE QT_MOC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/cf_tf/*.hpp)
+FILE(GLOB_RECURSE QT_MOC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/cf_tf/*.hpp)
 FILE(GLOB_RECURSE INC_ALL "include/cf_tf/*.hpp")
+FILE(GLOB_RECURSE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS src/*.cpp)
+FILE(GLOB_RECURSE QT_MOC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS launch/*.launch)
+FILE(GLOB_RECURSE INC_ALL "launch/*.launch")
 FILE(GLOB_RECURSE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS src/*.cpp)
 
 ## Add folders to be run by python nosetests
