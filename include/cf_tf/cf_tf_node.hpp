@@ -70,6 +70,31 @@ private:
   //ros::Time t;
   //ros::Time old_t;
 
+  bool setWorld(
+      std_srvs::Empty::Request& req,
+      std_srvs::Empty::Response& res)
+  {
+      ROS_INFO("World setup requested!");
+      m_state = WorldSet;
+
+      try{
+      tf::StampedTransform transform;
+      m_listener.lookupTransform(m_worldFrame, m_frame, ros::Time(0), transform);
+      m_startZ = transform.getOrigin().z();
+      }
+      catch(...){ROS_INFO("Problem in World setup request");}
+
+      return true;
+  }
+  enum State
+  {
+      Default = 0,
+      WorldSet = 1,
+      CrazyfliesSet = 2,
+      Operating = 3,
+  };
+  ros::ServiceServer m_serviceSetWorld;
+
   bool flag_world;// = false;  //To become a private parameter
 
   geometry_msgs::PoseStamped::_pose_type world_pose;
