@@ -13,26 +13,29 @@ Cf_Tf::Cf_Tf()
 
   params.param<std::string>("detection_array_topic", s, "/fiducials/fiducial_detection_array");
   m_marker_pose_sub = nh.subscribe(s, 10, &Cf_Tf::listenerCallback, this);
+  //for (int i=0; i<=3; i++)
+  //{
+    m_cf_pose_pub[0] = nh.advertise<geometry_msgs::PoseStamped::_pose_type>("cf_pose0", 1);
+    m_cf_pose_pub[1] = nh.advertise<geometry_msgs::PoseStamped::_pose_type>("cf_pose1", 1);
+    m_cf_pose_pub[2] = nh.advertise<geometry_msgs::PoseStamped::_pose_type>("cf_pose2", 1);
+    m_cf_pose_pub[3] = nh.advertise<geometry_msgs::PoseStamped::_pose_type>("cf_pose3", 1);
+  //}
+  m_world_pose_pub = nh.advertise<geometry_msgs::PoseStamped::_pose_type>("world_pose", 1);
+  m_serviceSetWorld = nh.advertiseService("setworld", &Cf_Tf::serviceSetWorld, this);
   //m_marker_pose_sub = nh.subscribe("/fiducials/fiducial_detection_array", 10, &Cf_Tf::listenerCallback, this);
 }
 
 void Cf_Tf::listenerCallback(const cob_object_detection_msgs::DetectionArray &msg)
 {
   //      WRITING IN WORLD FRAME VARIABLE      //
-  if (flag_world == false)
+  if (flag_world == true)
   {                                                               // We have no /world yet
     if (msg.detections.empty() != true)
     {
-      // Reads key input in terminal
-      ROS_INFO("Press 'w' to set world in the detected marker");
-      char c = getch();                                                               // Call non-blocking input function
-      if (c == 'w')
-      {
-        flag_world = true;                                                            // Will not enter this condition again
-        setWorldPose(msg);
-        puts("/world set");
-        ROS_INFO_STREAM(world_pose);
-      }
+      setWorldPose(msg);                                        // Will not enter this condition again
+      m_world_pose_pub.publish(world_pose);
+      puts("World set");
+      ROS_INFO_STREAM("World Position:" << world_pose);
     }
   }
   // We have a world
@@ -46,20 +49,21 @@ void Cf_Tf::listenerCallback(const cob_object_detection_msgs::DetectionArray &ms
         {
           int j = msg.detections[i].id; //msg.header.frame_id   msg.detections[i].id
           /*switch (j)
-                        {                                          // We do this so that we know that we can address the pose to the right marker. Will be replaced by the radio choice
-                          case 0: {ROS_INFO("CF 0:"); break;};     //ROS_INFO("CF 0:")
-                          case 1: {ROS_INFO("CF 1:"); break;};
-                          case 2: {ROS_INFO("CF 2:"); break;};
-                          case 3: {ROS_INFO("CF 3:"); break;};
-                          default:{ROS_INFO("ID Fail"); break;};                                  // If an error occurs and the detections[i] is accessed erronially
-                        }*/
+          {                                          // We do this so that we know that we can address the pose to the right marker. Will be replaced by the radio choice
+            case 0: {ROS_INFO("CF 0:"); break;};     // ROS_INFO("CF 0:")
+            case 1: {ROS_INFO("CF 1:"); break;};
+            case 2: {ROS_INFO("CF 2:"); break;};
+            case 3: {ROS_INFO("CF 3:"); break;};
+            default:{ROS_INFO("ID Fail"); break;};                                  // If an error occurs and the detections[i] is accessed erronially
+          }*/
           setCfPose(msg, j, i);
+          m_cf_pose_pub[j].publish(cf_pose[j]);
           //ROS_INFO_STREAM(msg.detections[i].id << msg.detections[i].pose.pose << j << cf_pose[j]);   //We want to check that the variable has been correctly written
-          ROS_INFO_STREAM(msg.detections.size());
+          //ROS_INFO_STREAM(msg.detections.size());
         }
         catch(...)
         {
-          ROS_INFO("Failed to write the CF pose "); //sprintf(buffer, i));              // Need to find how to efficiently convert int to string without too much pain
+          ROS_ERROR("Failed to write the CF pose"); //sprintf(buffer, i));              // Need to find how to efficiently convert int to string without too much pain
         }
       }
     }
@@ -83,7 +87,7 @@ void Cf_Tf::broadcastWorld()   // Does not work properly
   }
   catch(...)
   {
-    ROS_INFO("Failed to broadcast world");
+    ROS_ERROR("Failed to broadcast world");
   }
 }
 
@@ -103,23 +107,8 @@ void Cf_Tf::broadcastCF(int cf_id)
   }
   catch(...)
   {
-    ROS_INFO("Failed to broadcast a Crazyflie");
+    ROS_ERROR("Failed to broadcast a Crazyflie");
   }
-}
-
-  // Reads key input in terminal
-char Cf_Tf::getch()
-{
-  static struct termios oldt, newt;             // Defines the objects new and old terminals
-  tcgetattr( STDIN_FILENO, &oldt);              // save old settings
-  newt = oldt;
-  newt.c_lflag &= ~(ICANON);                    // disable buffering
-  tcsetattr( STDIN_FILENO, TCSANOW, &newt);     // apply new settings
-
-  char c = getchar();                           // read character (non-blocking)
-
-  tcsetattr( STDIN_FILENO, TCSANOW, &oldt);     // restore old settings
-  return c;
 }
 
 geometry_msgs::PoseStamped::_pose_type Cf_Tf::getWorldPose() const
@@ -143,6 +132,8 @@ void Cf_Tf::setWorldPose(const cob_object_detection_msgs::DetectionArray &wdp) /
   world_pose.orientation.y = wdp.detections[0].pose.pose.orientation.y;
   world_pose.orientation.z = wdp.detections[0].pose.pose.orientation.z;
   world_pose.orientation.w = wdp.detections[0].pose.pose.orientation.w;
+
+  flag_world = false;
 }
 
 void Cf_Tf::setCfPose(const cob_object_detection_msgs::DetectionArray &cfp, int jj, int ii)
@@ -155,6 +146,10 @@ void Cf_Tf::setCfPose(const cob_object_detection_msgs::DetectionArray &cfp, int 
   cf_pose[jj].orientation.y = cfp.detections[ii].pose.pose.orientation.y;
   cf_pose[jj].orientation.z = cfp.detections[ii].pose.pose.orientation.z;
   cf_pose[jj].orientation.w = cfp.detections[ii].pose.pose.orientation.w;
+
+  m_world_pose_pub.publish(world_pose);
+
+  flag_world = false;
 }
 
 void Cf_Tf::initializeWorldPose()
@@ -166,6 +161,8 @@ void Cf_Tf::initializeWorldPose()
   world_pose.orientation.y = 0;
   world_pose.orientation.z = 0;
   world_pose.orientation.w = 1;
+
+  ROS_WARN("The world has been initialized to default");
 
   flag_world = false;
 }
@@ -187,8 +184,18 @@ void Cf_Tf::initializeCfPose()
   }
   catch(...)
   {
-    ROS_INFO("Failed to initialize the crazyflies' poses");
+    ROS_ERROR("Failed to initialize the crazyflies' poses");
   }
+}
+
+bool Cf_Tf::serviceSetWorld(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res)
+{
+  ROS_INFO("World setup requested!");
+  // If states are used, change state here
+
+  flag_world = true;
+
+  return true;
 }
 
 //Publish this: rostopic pub /goal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "world"}, pose: {position: {x: 0.0, y: 0.0, z: 2.0}, orientation: {w: 1.0}}}'

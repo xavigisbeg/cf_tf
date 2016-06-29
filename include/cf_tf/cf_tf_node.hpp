@@ -5,6 +5,7 @@
 
 
 #include <std_msgs/Float64.h>
+#include <std_srvs/Empty.h>
 #include <vector>
 #include <stdlib.h>
 #include <termios.h>
@@ -51,51 +52,35 @@ public:
   void initializeCfPose();
 
     // StampedPose of world and CF
-
-
+  bool serviceSetWorld(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res);
 
 private:
   ros::Subscriber m_marker_pose_sub;
+  ros::ServiceServer m_serviceSetWorld;
 
   tf::TransformBroadcaster brcf[4];
   tf::Transform transformcf[4];
   tf::TransformBroadcaster brw;
   tf::Transform transformw;
 
-  //ros::Publisher m_world_pose_pub;
-  //ros::Publisher m_cf_pose_pub;
+  ros::Publisher m_world_pose_pub;
+  ros::Publisher m_cf_pose_pub[4];
   //ros::Publisher m_debug_pub; //! For debugging variables in rqt_plot
   //dynamic reconfigure server
   //dynamic_reconfigure::Server<ardrone_velocity::dynamic_param_configConfig> m_server;
   //ros::Time t;
   //ros::Time old_t;
 
-  bool setWorld(
-      std_srvs::Empty::Request& req,
-      std_srvs::Empty::Response& res)
-  {
-      ROS_INFO("World setup requested!");
-      m_state = WorldSet;
-
-      try{
-      tf::StampedTransform transform;
-      m_listener.lookupTransform(m_worldFrame, m_frame, ros::Time(0), transform);
-      m_startZ = transform.getOrigin().z();
-      }
-      catch(...){ROS_INFO("Problem in World setup request");}
-
-      return true;
-  }
-  enum State
+/*  enum State
   {
       Default = 0,
       WorldSet = 1,
       CrazyfliesSet = 2,
       Operating = 3,
-  };
-  ros::ServiceServer m_serviceSetWorld;
+  };*/
+  //ros::ServiceServer m_serviceSetWorld;
 
-  bool flag_world;// = false;  //To become a private parameter
+  bool flag_world; // = false;  //To become a private parameter
 
   geometry_msgs::PoseStamped::_pose_type world_pose;
   geometry_msgs::PoseStamped::_pose_type cf_pose[4];

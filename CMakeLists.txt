@@ -126,12 +126,12 @@ include_directories(
 #   src/${PROJECT_NAME}/cf_tf.cpp
 # )
 
-set(CF_TF_LISTENER_SOURCE_FILES
+set(CF_TF_SOURCE_FILES
     src/cf_tf_node.cpp
     src/cf_tf.cpp
 )
 
-set(CF_TF_LISTENER_HEADER_FILES
+set(CF_TF_HEADER_FILES
     include/cf_tf/cf_tf_node.hpp
 )
 
@@ -142,7 +142,7 @@ set(CF_TF_LISTENER_HEADER_FILES
 # add_dependencies(cf_tf ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-add_executable(cf_tf ${CF_TF_LISTENER_SOURCE_FILES} ${CF_TF_LISTENER_HEADER_FILES})
+add_executable(cf_tf ${CF_TF_SOURCE_FILES} ${CF_TF_HEADER_FILES})
 # add_executable(cf_tf_node src/cf_tf_node.cpp)
 
 ## Add cmake target dependencies of the executable

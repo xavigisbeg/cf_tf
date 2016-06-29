@@ -8,8 +8,8 @@
   <!-- Camera parameters -->
   <arg name="camera_enable" default="true"/>
 	<arg name="camera_device" default="/dev/video0"/>
-	<arg name="camera_info" default="file://$(find cf_tf)/data/camera1_1280x720.yaml"/>
-	<arg name="camera_frame_id" default="cam0"/>
+	<arg name="camera_info" default="file://$(find cf_tf)/data/cam0_1280x720.yaml"/>
+	<arg name="camera_frame_id" default="camera"/>
 	<arg name="camera_width" default="1280"/>
 	<arg name="camera_height" default="720" />
 	<arg name="camera_fps"  default="30"/>
@@ -21,8 +21,8 @@
   <!-- Groups with nodes and topics -->
   <!-- Group for camera configuring and image obtention. This works and has been taken from ar_sys single board launcher -->
 	<group if="$(arg camera_enable)">
-		<node ns="cam0" pkg="image_proc" type="image_proc" name="image_proc$(arg uid)" />
-		<node ns="cam0" pkg="uvc_camera" type="uvc_camera_node" name="uvc_camera$(arg uid)" output="screen">
+		<node ns="camera" pkg="image_proc" type="image_proc" name="image_proc$(arg uid)" />
+		<node ns="camera" pkg="uvc_camera" type="uvc_camera_node" name="uvc_camera$(arg uid)" output="screen">
 			<param name="width" type="int" value="$(arg camera_width)" />
 			<param name="height" type="int" value="$(arg camera_height)" />
 			<param name="fps" type="int" value="$(arg camera_fps)" />
