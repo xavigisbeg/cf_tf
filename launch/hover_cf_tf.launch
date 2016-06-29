@@ -2,7 +2,7 @@
 <launch>
   <arg name="uri" default="radio://0/120/2M/0xE7E7E7E701" />
   <arg name="frame" default="/cf1" />
-  <arg name="joy_dev" default="/dev/input/js2" />
+  <arg name="joy_dev" default="/dev/input/js0" />
   <arg name="x" default="0" />
   <arg name="y" default="0" />
   <arg name="z" default="0.5" />

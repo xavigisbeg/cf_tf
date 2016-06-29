@@ -81,7 +81,7 @@ void Cf_Tf::broadcastWorld()   // Does not work properly
 
     Cf_Tf::transformw.setOrigin(tf::Vector3(world_pose.position.x, world_pose.position.y, world_pose.position.z));
     Cf_Tf::transformw.setRotation(tf::Quaternion(world_pose.orientation.x, world_pose.orientation.y, world_pose.orientation.z, world_pose.orientation.w));
-    Cf_Tf::brw.sendTransform(tf::StampedTransform(transformw.inverse(), ros::Time::now(), "world" , "cam0"));
+    Cf_Tf::brw.sendTransform(tf::StampedTransform(transformw.inverse(), ros::Time::now(), "world" , "camera"));
     //ROS_INFO_STREAM(world_pose);
     //ROS_INFO("World broadcasted");
   }
@@ -101,7 +101,7 @@ void Cf_Tf::broadcastCF(int cf_id)
     Cf_Tf::transformcf[cf_id].setOrigin(tf::Vector3(cf_pose[cf_id].position.x, cf_pose[cf_id].position.y, cf_pose[cf_id].position.z));
     Cf_Tf::transformcf[cf_id].setRotation(tf::Quaternion(cf_pose[cf_id].orientation.x, cf_pose[cf_id].orientation.y, cf_pose[cf_id].orientation.z, cf_pose[cf_id].orientation.w));
     std::string str_ch_fr = "cf" + boost::lexical_cast<std::string>(cf_id);
-    Cf_Tf::brcf[cf_id].sendTransform(tf::StampedTransform(transformcf[cf_id], ros::Time::now(), "cam0" , str_ch_fr));  //+ sprintf(i))
+    Cf_Tf::brcf[cf_id].sendTransform(tf::StampedTransform(transformcf[cf_id], ros::Time::now(), "camera" , str_ch_fr));  //+ sprintf(i))
     //ROS_INFO_STREAM(cf_pose);
     //ROS_INFO("CF broadcasted");
   }

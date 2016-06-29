@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
   Cf_Tf Node;
   Node.initializeWorldPose();
   Node.initializeCfPose();
-
+  ROS_INFO("Hi");
   //ros::Duration(2).sleep();
 
   while(Node.nh.ok())
