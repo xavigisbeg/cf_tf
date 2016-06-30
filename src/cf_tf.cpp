@@ -13,14 +13,14 @@ int main(int argc, char* argv[])
 
   while(Node.nh.ok())
   {
-    ros::spinOnce();
+    ros::spin();
     //ROS_INFO("iSpin");
-    Node.broadcastWorld();
-    for (int cf_id=0; cf_id<=3; cf_id++)
+    //Node.broadcastWorld();
+    /*for (int cf_id=0; cf_id<=3; cf_id++)
     {
       Node.broadcastCF(cf_id);
       //ROS_INFO_STREAM(Node.getCfPose(cf_id));
-    }
+    }*/
   }
   return 0;
 }

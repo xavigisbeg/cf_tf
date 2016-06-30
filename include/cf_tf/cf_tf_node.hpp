@@ -5,6 +5,7 @@
 
 
 #include <std_msgs/Float64.h>
+#include <nav_msgs/Path.h>
 #include <std_srvs/Empty.h>
 #include <vector>
 #include <stdlib.h>
@@ -58,10 +59,8 @@ private:
   ros::Subscriber m_marker_pose_sub;
   ros::ServiceServer m_serviceSetWorld;
 
-  tf::TransformBroadcaster brcf[4];
-  tf::Transform transformcf[4];
-  tf::TransformBroadcaster brw;
-  tf::Transform transformw;
+  tf::TransformBroadcaster br;
+  tf::Transform transform;
 
   ros::Publisher m_world_pose_pub;
   ros::Publisher m_cf_pose_pub[4];

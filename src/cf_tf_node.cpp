@@ -39,9 +39,10 @@ void Cf_Tf::listenerCallback(const cob_object_detection_msgs::DetectionArray &ms
     }
   }
   // We have a world
-  else{
+  else{   
     if (msg.detections.empty() != true)
     {
+      broadcastWorld();
       // Note that marker id [j] and detection [i] are not the same.
       for (int i=0; i <= msg.detections.size()-1; i++)
       {                               // Checks if a marker has been detected
@@ -58,6 +59,8 @@ void Cf_Tf::listenerCallback(const cob_object_detection_msgs::DetectionArray &ms
           }*/
           setCfPose(msg, j, i);
           m_cf_pose_pub[j].publish(cf_pose[j]);
+          broadcastCF(j);
+          //nav_msgs::Path m_cf_path_pub[j].publish(cf_pose[j])
           //ROS_INFO_STREAM(msg.detections[i].id << msg.detections[i].pose.pose << j << cf_pose[j]);   //We want to check that the variable has been correctly written
           //ROS_INFO_STREAM(msg.detections.size());
         }
@@ -68,6 +71,7 @@ void Cf_Tf::listenerCallback(const cob_object_detection_msgs::DetectionArray &ms
       }
     }
     //else  ROS_INFO("No Marker");
+
   }
 }
 
@@ -79,9 +83,9 @@ void Cf_Tf::broadcastWorld()   // Does not work properly
   {
     // Broadcast the world frame at any moment
 
-    Cf_Tf::transformw.setOrigin(tf::Vector3(world_pose.position.x, world_pose.position.y, world_pose.position.z));
-    Cf_Tf::transformw.setRotation(tf::Quaternion(world_pose.orientation.x, world_pose.orientation.y, world_pose.orientation.z, world_pose.orientation.w));
-    Cf_Tf::brw.sendTransform(tf::StampedTransform(transformw.inverse(), ros::Time::now(), "world" , "camera"));
+    Cf_Tf::transform.setOrigin(tf::Vector3(world_pose.position.x, world_pose.position.y, world_pose.position.z));
+    Cf_Tf::transform.setRotation(tf::Quaternion(world_pose.orientation.x, world_pose.orientation.y, world_pose.orientation.z, world_pose.orientation.w));
+    Cf_Tf::br.sendTransform(tf::StampedTransform(transform.inverse(), ros::Time::now(), "world" , "camera"));
     //ROS_INFO_STREAM(world_pose);
     //ROS_INFO("World broadcasted");
   }
@@ -98,10 +102,10 @@ void Cf_Tf::broadcastCF(int cf_id)
   {   
     // Broadcast the crazyflies' frames at any moment
 
-    Cf_Tf::transformcf[cf_id].setOrigin(tf::Vector3(cf_pose[cf_id].position.x, cf_pose[cf_id].position.y, cf_pose[cf_id].position.z));
-    Cf_Tf::transformcf[cf_id].setRotation(tf::Quaternion(cf_pose[cf_id].orientation.x, cf_pose[cf_id].orientation.y, cf_pose[cf_id].orientation.z, cf_pose[cf_id].orientation.w));
+    Cf_Tf::transform.setOrigin(tf::Vector3(cf_pose[cf_id].position.x, cf_pose[cf_id].position.y, cf_pose[cf_id].position.z));
+    Cf_Tf::transform.setRotation(tf::Quaternion(cf_pose[cf_id].orientation.x, cf_pose[cf_id].orientation.y, cf_pose[cf_id].orientation.z, cf_pose[cf_id].orientation.w));
     std::string str_ch_fr = "cf" + boost::lexical_cast<std::string>(cf_id);
-    Cf_Tf::brcf[cf_id].sendTransform(tf::StampedTransform(transformcf[cf_id], ros::Time::now(), "camera" , str_ch_fr));  //+ sprintf(i))
+    Cf_Tf::br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "camera", str_ch_fr));  //+ sprintf(i))
     //ROS_INFO_STREAM(cf_pose);
     //ROS_INFO("CF broadcasted");
   }
@@ -198,4 +202,4 @@ bool Cf_Tf::serviceSetWorld(std_srvs::Empty::Request& req, std_srvs::Empty::Resp
   return true;
 }
 
-//Publish this: rostopic pub /goal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "world"}, pose: {position: {x: 0.0, y: 0.0, z: 2.0}, orientation: {w: 1.0}}}'
+//Publish this: rostopic pub /goal geometry_msgs/PoseStamped '{header: {stamp: now, frame_id: "world"}, pose: {position: {x: 0.0, y: 0.0, z: 1.0}, orientation: {w: 1.0}}}'
