@@ -15,7 +15,7 @@
 	<arg name="camera_fps"  default="30"/>
 
   <!-- Video type and info -->
-  <arg name="rgb_topic" default="//prep/camera/" /> <!-- THE NAME OF THE TOPIC MUST BE BETWEEN /SLASHES/!!! /$(arg camera_frame_id)/ -->
+  <arg name="rgb_topic" default="/prep/camera/" /> <!-- THE NAME OF THE TOPIC MUST BE BETWEEN /SLASHES/!!! /$(arg camera_frame_id)/ -->
 	<arg name="uid" default=""/>
 	<arg name="video_namespace" default="$(arg camera_frame_id)"/>
   <!-- Groups with nodes and topics -->
