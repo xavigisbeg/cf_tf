@@ -7,7 +7,7 @@
   <!-- Declare this arguments, that will be used when opening the nodes and topics -->
   <!-- Camera parameters -->
   <arg name="camera_enable" default="true"/>
-	<arg name="camera_device" default="/dev/video1"/>
+	<arg name="camera_device" default="/dev/video0"/>
 	<arg name="camera_info" default="file://$(find cf_tf)/data/camera2_1280x720.yaml"/>
 	<arg name="camera_frame_id" default="camera"/>
 	<arg name="camera_width" default="1280"/>
