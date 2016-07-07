@@ -8,7 +8,7 @@
   <!-- Camera parameters -->
   <arg name="camera_enable" default="true"/>
 	<arg name="camera_device" default="/dev/video0"/>
-	<arg name="camera_info" default="file://$(find cf_tf)/data/camera1_1280x720.yaml"/>
+	<arg name="camera_info" default="file://$(find cf_tf)/data/camera/camera1_1280x720.yaml"/>
 	<arg name="camera_frame_id" default="cam0"/>
 	<arg name="camera_width" default="1280"/>
 	<arg name="camera_height" default="720" />

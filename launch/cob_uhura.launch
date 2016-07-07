@@ -8,7 +8,7 @@
   <!-- Camera parameters -->
   <arg name="camera_enable" default="true"/>
 	<arg name="camera_device" default="/dev/video0"/>
-	<arg name="camera_info" default="file://$(find cf_tf)/data/camera1_1280x720.yaml"/>
+	<arg name="camera_info" default="file://$(find cf_tf)/data/camera/camera1_1280x720.yaml"/>
 	<arg name="camera_frame_id" default="camera"/>
 	<arg name="camera_width" default="1280"/>
 	<arg name="camera_height" default="720" />
@@ -30,7 +30,7 @@
     <param name="camera_frame_id" value="$(arg camera_frame_id)" />
     <param name="camera_name" value= "camera"/>
     <param name="camera_info_url" value= "file:////home/roboterlabor/Documents/camera_system_robotics_lab/camera_calibration_files/camera1/camera1_1280x720.yaml"/>
-    <param name="framerate" value="30" />
+    <param name="framerate" value="$(arg camera_fps)" />
   </node>
 
   <node pkg="tud_img_prep" type="img_prep" name="img_prep" output="screen">
@@ -41,8 +41,8 @@
     <!-- Configuration of the marker -->
   <arg name="yaml_file" default="fiducials_0.yaml" />
   <!-- send parameters to parameter server -->
-  <rosparam command="load" ns="fiducials" file="$(find cf_tf)/data/$(arg yaml_file)"/>
-  <param name="fiducials/model_directory" value="$(find cf_tf)/data/"/>
+  <rosparam command="load" ns="fiducials" file="$(find cf_tf)/data/cob_fiducials/$(arg yaml_file)"/>
+  <param name="fiducials/model_directory" value="$(find cf_tf)/data/cob_fiducials/"/>
 
   <!-- start left camera -->
   <node pkg="cob_fiducials" ns="fiducials" type="fiducials" name="fiducials" output="screen">
