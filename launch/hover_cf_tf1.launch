@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="uri" default="radio://0/120/2M/0xE7E7E7E701" />
-  <arg name="frame" default="/cf1" />
+  <arg name="uri" default="radio://0/120/2M/0xE7E7E7E701" />  <!-- 0: radio://0/120/2M/0xE7E7E7E700  1: radio://0/120/2M/0xE7E7E7E701  2: radio://1/110/2M/0xE7E7E7E702  3: radio://1/110/2M/0xE7E7E7E703-->
+  <arg name="frame" default="/cf3" />
   <arg name="joy_dev" default="/dev/input/js0" />
   <arg name="x" default="0" />
   <arg name="y" default="0" />
@@ -50,7 +50,7 @@
 
 
   <!-- run rviz -->
-  <param name="robot_description" command="$(find xacro)/xacro.py $(find crazyflie_description)/urdf/crazyflie.urdf.xacro" />
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find crazyflie_demo)/launch/crazyflie_pos.rviz" required="true" />
+  <!-- <param name="robot_description" command="$(find xacro)/xacro.py $(find crazyflie_description)/urdf/crazyflie.urdf.xacro" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find crazyflie_demo)/launch/crazyflie_pos.rviz" required="true" />  -->
 
 </launch>

@@ -8,19 +8,10 @@ int main(int argc, char* argv[])
   Cf_Tf Node;
   Node.initializeWorldPose();
   Node.initializeCfPose();
-  ROS_INFO("Hi");
-  //ros::Duration(2).sleep();
 
   while(Node.nh.ok())
   {
     ros::spin();
-    //ROS_INFO("iSpin");
-    //Node.broadcastWorld();
-    /*for (int cf_id=0; cf_id<=3; cf_id++)
-    {
-      Node.broadcastCF(cf_id);
-      //ROS_INFO_STREAM(Node.getCfPose(cf_id));
-    }*/
   }
   return 0;
 }

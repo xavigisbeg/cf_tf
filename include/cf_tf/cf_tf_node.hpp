@@ -5,11 +5,8 @@
 
 
 #include <std_msgs/Float64.h>
-#include <nav_msgs/Path.h>
 #include <std_srvs/Empty.h>
-#include <vector>
 #include <stdlib.h>
-#include <termios.h>
 #include <stdio.h>
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
@@ -17,10 +14,10 @@
 #include "std_msgs/String.h"
 #include "geometry_msgs/PoseStamped.h"
 #include <cob_object_detection_msgs/DetectionArray.h>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/CameraInfo.h>
-#include <visualization_msgs/Marker.h>
-#include <visualization_msgs/MarkerArray.h>
+
+#include <dynamic_reconfigure/server.h>
+#include <cf_tf/dynamic_param_configConfig.h>
+
 
 class Cf_Tf
 {
@@ -34,6 +31,7 @@ public:
   // FUNCTIONS
     //Subscribers and Publishers
   void listenerCallback(const cob_object_detection_msgs::DetectionArray &msg);
+  void dynamicReconfigureCallback(cf_tf::dynamic_param_configConfig &config, uint32_t level);
 
     // Broadcasters
   void broadcastWorld();
@@ -64,22 +62,11 @@ private:
 
   ros::Publisher m_world_pose_pub;
   ros::Publisher m_cf_pose_pub[4];
-  //ros::Publisher m_debug_pub; //! For debugging variables in rqt_plot
+
   //dynamic reconfigure server
-  //dynamic_reconfigure::Server<ardrone_velocity::dynamic_param_configConfig> m_server;
-  //ros::Time t;
-  //ros::Time old_t;
+  dynamic_reconfigure::Server<cf_tf::dynamic_param_configConfig> m_server;
 
-/*  enum State
-  {
-      Default = 0,
-      WorldSet = 1,
-      CrazyfliesSet = 2,
-      Operating = 3,
-  };*/
-  //ros::ServiceServer m_serviceSetWorld;
-
-  bool flag_world; // = false;  //To become a private parameter
+  bool flag_world; //To become a private parameter
 
   geometry_msgs::PoseStamped::_pose_type world_pose;
   geometry_msgs::PoseStamped::_pose_type cf_pose[4];
