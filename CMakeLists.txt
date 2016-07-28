@@ -6,7 +6,8 @@ project(cf_tf)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  //rospy
+  rospy
+  dynamic_reconfigure
   cob_object_detection_msgs
   geometry_msgs
   sensor_msgs
@@ -89,10 +90,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
+generate_dynamic_reconfigure_options(
+   cfg/dynamic_param_config.cfg
 #   cfg/DynReconf2.cfg
-# )
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -126,12 +127,12 @@ include_directories(
 #   src/${PROJECT_NAME}/cf_tf.cpp
 # )
 
-set(CF_TF_LISTENER_SOURCE_FILES
+set(CF_TF_SOURCE_FILES
     src/cf_tf_node.cpp
     src/cf_tf.cpp
 )
 
-set(CF_TF_LISTENER_HEADER_FILES
+set(CF_TF_HEADER_FILES
     include/cf_tf/cf_tf_node.hpp
 )
 
@@ -140,9 +141,10 @@ set(CF_TF_LISTENER_HEADER_FILES
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 # add_dependencies(cf_tf ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#add_dependencies(cf_tf ${PROJECT_NAME}_gencfg)
 
 ## Declare a C++ executable
-add_executable(cf_tf ${CF_TF_LISTENER_SOURCE_FILES} ${CF_TF_LISTENER_HEADER_FILES})
+add_executable(cf_tf ${CF_TF_SOURCE_FILES} ${CF_TF_HEADER_FILES})
 # add_executable(cf_tf_node src/cf_tf_node.cpp)
 
 ## Add cmake target dependencies of the executable
@@ -157,6 +159,8 @@ target_link_libraries(cf_tf ${catkin_LIBRARIES})
 ## Add the modified fiducials cpp
 #add_executable(fiducials_cf src/fiducials_cf.cpp)
 #target_link_libraries(fiducials_cf ${catkin_LIBRARIES})
+
+add_dependencies(cf_tf ${PROJECT_NAME}_gencfg)
 
 #############
 ## Install ##
@@ -209,9 +213,8 @@ target_link_libraries(cf_tf ${catkin_LIBRARIES})
 FILE(GLOB_RECURSE QT_MOC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/cf_tf/*.hpp)
 FILE(GLOB_RECURSE INC_ALL "include/cf_tf/*.hpp")
 FILE(GLOB_RECURSE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS src/*.cpp)
-FILE(GLOB_RECURSE QT_MOC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS launch/*.launch)
-FILE(GLOB_RECURSE INC_ALL "launch/*.launch")
-FILE(GLOB_RECURSE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS src/*.cpp)
+FILE(GLOB_RECURSE LaunchFiles "launch/*.launch")
+add_custom_target(launchers SOURCES ${LaunchFiles})
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)

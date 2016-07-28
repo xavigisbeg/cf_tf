@@ -5,9 +5,8 @@
 
 
 #include <std_msgs/Float64.h>
-#include <vector>
+#include <std_srvs/Empty.h>
 #include <stdlib.h>
-#include <termios.h>
 #include <stdio.h>
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
@@ -15,10 +14,10 @@
 #include "std_msgs/String.h"
 #include "geometry_msgs/PoseStamped.h"
 #include <cob_object_detection_msgs/DetectionArray.h>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/CameraInfo.h>
-#include <visualization_msgs/Marker.h>
-#include <visualization_msgs/MarkerArray.h>
+
+#include <dynamic_reconfigure/server.h>
+#include <cf_tf/dynamic_param_configConfig.h>
+
 
 class Cf_Tf
 {
@@ -32,6 +31,7 @@ public:
   // FUNCTIONS
     //Subscribers and Publishers
   void listenerCallback(const cob_object_detection_msgs::DetectionArray &msg);
+  void dynamicReconfigureCallback(cf_tf::dynamic_param_configConfig &config, uint32_t level);
 
     // Broadcasters
   void broadcastWorld();
@@ -51,26 +51,22 @@ public:
   void initializeCfPose();
 
     // StampedPose of world and CF
-
-
+  bool serviceSetWorld(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res);
 
 private:
   ros::Subscriber m_marker_pose_sub;
+  ros::ServiceServer m_serviceSetWorld;
 
-  tf::TransformBroadcaster brcf[4];
-  tf::Transform transformcf[4];
-  tf::TransformBroadcaster brw;
-  tf::Transform transformw;
+  tf::TransformBroadcaster br;
+  tf::Transform transform;
 
-  //ros::Publisher m_world_pose_pub;
-  //ros::Publisher m_cf_pose_pub;
-  //ros::Publisher m_debug_pub; //! For debugging variables in rqt_plot
+  ros::Publisher m_world_pose_pub;
+  ros::Publisher m_cf_pose_pub[4];
+
   //dynamic reconfigure server
-  //dynamic_reconfigure::Server<ardrone_velocity::dynamic_param_configConfig> m_server;
-  //ros::Time t;
-  //ros::Time old_t;
+  dynamic_reconfigure::Server<cf_tf::dynamic_param_configConfig> m_server;
 
-  bool flag_world;// = false;  //To become a private parameter
+  bool flag_world; //To become a private parameter
 
   geometry_msgs::PoseStamped::_pose_type world_pose;
   geometry_msgs::PoseStamped::_pose_type cf_pose[4];
