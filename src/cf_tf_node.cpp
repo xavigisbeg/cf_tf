@@ -98,7 +98,6 @@ void Cf_Tf::dynamicReconfigureCallback(cf_tf::dynamic_param_configConfig &config
 // TF Broadcasters
 void Cf_Tf::broadcastWorld()   // Does not work properly
 {
-  //std::isnan();     //Check if the values to pass the transform are valid
   try
   {
     // Broadcast the world frame at any moment
@@ -106,8 +105,6 @@ void Cf_Tf::broadcastWorld()   // Does not work properly
     Cf_Tf::transform.setOrigin(tf::Vector3(world_pose.position.x, world_pose.position.y, world_pose.position.z));
     Cf_Tf::transform.setRotation(tf::Quaternion(world_pose.orientation.x, world_pose.orientation.y, world_pose.orientation.z, world_pose.orientation.w));
     Cf_Tf::br.sendTransform(tf::StampedTransform(transform.inverse(), ros::Time::now(), "world" , "camera"));
-    //ROS_INFO_STREAM(world_pose);
-    //ROS_INFO("World broadcasted");
   }
   catch(...)
   {
@@ -126,8 +123,6 @@ void Cf_Tf::broadcastCF(int cf_id)
     Cf_Tf::transform.setRotation(tf::Quaternion(cf_pose[cf_id].orientation.x, cf_pose[cf_id].orientation.y, cf_pose[cf_id].orientation.z, cf_pose[cf_id].orientation.w));
     std::string str_ch_fr = "cf" + boost::lexical_cast<std::string>(cf_id);
     Cf_Tf::br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "camera", str_ch_fr));  //+ sprintf(i))
-    //ROS_INFO_STREAM(cf_pose);
-    //ROS_INFO("CF broadcasted");
   }
   catch(...)
   {
